@@ -398,10 +398,10 @@ class VariantManager {
         priceCell.innerHTML = this.createPriceHTML(combo);
         row.appendChild(priceCell);
 
-        const stockCell = document.createElement('td');
-        stockCell.className = 'stock-cell';
-        stockCell.innerHTML = this.createStockHTML(combo.stock);
-        row.appendChild(stockCell);
+        // const stockCell = document.createElement('td');
+        // stockCell.className = 'stock-cell';
+        // stockCell.innerHTML = this.createStockHTML(combo.stock);
+        // row.appendChild(stockCell);
 
         const actionsCell = document.createElement('td');
         actionsCell.innerHTML = this.createActionsHTML(combo);
