@@ -1,0 +1,292 @@
+{{#> _wrappers/admin-wrapper}}
+
+<h1 class="page-title">Dashboard</h1>
+<p class="page-sub-title">Welcome, {{user.fullName}}!</p>
+
+<div class="section animate-slide-in-up order-status-section mt-3">
+    <h3 class="section-title mb-2">Tình trạng đơn hàng</h3>
+
+    <div class="row g-3 order-status-grid">
+
+        <div class="col-md-2 col-6">
+            <div class="card status-card pending">
+                <div class="card-body">
+                    <h6 class="status-label">Chờ duyệt</h6>
+                    <div class="status-value">{{stats.pending}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+            <div class="card status-card confirmed">
+                <div class="card-body">
+                    <h6 class="status-label">Đã xác nhận</h6>
+                    <div class="status-value">{{stats.confirmed}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+            <div class="card status-card preparing">
+                <div class="card-body">
+                    <h6 class="status-label">Đang chuẩn bị</h6>
+                    <div class="status-value">{{stats.preparing}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+            <div class="card status-card shipping">
+                <div class="card-body">
+                    <h6 class="status-label">Đang giao</h6>
+                    <div class="status-value">{{stats.shipping}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+            <div class="card status-card delivered">
+                <div class="card-body">
+                    <h6 class="status-label">Hoàn tất</h6>
+                    <div class="status-value">{{stats.delivered}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2 col-6">
+            <div class="card status-card cancelled">
+                <div class="card-body">
+                    <h6 class="status-label">Đã hủy</h6>
+                    <div class="status-value">{{stats.cancelled}}</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="section animate-slide-in-up payment-stats-section mt-3">
+    <h3 class="section-title mb-2">Thống kê phương thức thanh toán</h3>
+
+    <div class="row g-3 payment-stats-grid">
+
+        <div class="col-md-6 col-12">
+            <div class="card payment-card cod">
+                <div class="card-body text-center">
+                    <h6 class="payment-label mb-1">Thanh toán COD</h6>
+                    <h3 class="payment-value">{{paymentStats.cod.count}}</h3>
+                    <div class="payment-percent">{{paymentStats.cod.percent}}%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-12">
+            <div class="card payment-card vnpay">
+                <div class="card-body text-center">
+                    <h6 class="payment-label mb-1">Thanh toán VNPAY</h6>
+                    <h3 class="payment-value">{{paymentStats.vnpay.count}}</h3>
+                    <div class="payment-percent">{{paymentStats.vnpay.percent}}%</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="section animate-slide-in-up revenue-section mt-3">
+    <h3 class="section-title mb-2">Thống kê doanh thu tháng {{dateRangeLabel}}</h3>
+    <form method="GET" class="d-flex gap-2">
+        <input type="date" name="startDate" class="form-control" value="{{startDate}}">
+        <input type="date" name="endDate" class="form-control" value="{{endDate}}">
+        <button class="btn btn-primary">Lọc</button>
+    </form>
+    <div class="row g-3 mb-4">
+        <div class="col-md-6 col-12">
+            <div class="card revenue-card">
+                <div class="card-body text-center">
+                    <h6 class="revenue-label mb-1">Tổng doanh thu:</h6>
+                    <h3 class="revenue-value">{{formatCurrency revenueStats.currentMonth}}</h3>
+                    {{!-- <div class="revenue-trend text-success">
+                        <i class="fas fa-chart-line me-1"></i> Đang cập nhật
+                    </div> --}}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart container -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Doanh thu theo ngày</h5>
+            <div class="chart-container">
+                <canvas id="revenueChart" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{{/ _wrappers/admin-wrapper}}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{!--
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        const dailyRevenue = {{{ json revenueStats.dailyRevenue }
+    }};
+    console.log(dailyRevenue);
+    const labels = [];
+    const data = [];
+
+    // Map dd/mm -> revenue (giữ nguyên format VN)
+    const revenueMap = {};
+
+    dailyRevenue.forEach(item => {
+        const date = new Date(item._id);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const key = `${day}/${month}`;
+        revenueMap[key] = item.totalRevenue;
+    });
+
+    // Tháng hiện tại (theo client, đúng format Date như đang dùng)
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthIndex = now.getMonth(); // 0-based
+    const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
+
+    // Fill full ngày trong tháng
+    for (let day = 1; day <= daysInMonth; day++) {
+        const d = day.toString().padStart(2, '0');
+        const m = (monthIndex + 1).toString().padStart(2, '0');
+        const key = `${d}/${m}`;
+
+        labels.push(key);
+        data.push(revenueMap[key] ?? 0);
+    }
+
+    // Chart
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Doanh thu (VND)',
+                data,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                borderRadius: 6,
+                barThickness: 22
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback(value) {
+                            return new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND'
+                            }).format(value);
+                        }
+                    }
+                }
+            },
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label(context) {
+                            return `${context.dataset.label}: ` +
+                                new Intl.NumberFormat('vi-VN', {
+                                    style: 'currency',
+                                    currency: 'VND'
+                                }).format(context.parsed.y);
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+
+    // Handlebars helper
+    Handlebars.registerHelper('json', context => JSON.stringify(context));
+</script> --}}
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+    const dailyRevenue = {{{ json revenueStats.dailyRevenue }}};
+
+    const startDateStr = '{{startDate}}'; // YYYY-MM-DD
+    const endDateStr = '{{endDate}}';
+
+    const startDate = new Date(startDateStr + 'T00:00:00');
+    const endDate = new Date(endDateStr + 'T00:00:00');
+
+    const revenueMap = {};
+
+    // Map YYYY-MM-DD -> revenue
+    dailyRevenue.forEach(item => {
+        revenueMap[item._id] = item.totalRevenue;
+    });
+
+    const labels = [];
+    const data = [];
+
+    // Loop từ startDate → endDate
+    for (
+        let d = new Date(startDate);
+        d <= endDate;
+        d.setDate(d.getDate() + 1)
+    ) {
+        const yyyy = d.getFullYear();
+        const mm = (d.getMonth() + 1).toString().padStart(2, '0');
+        const dd = d.getDate().toString().padStart(2, '0');
+
+        const key = `${yyyy}-${mm}-${dd}`; // match backend
+        const label = `${dd}/${mm}`;
+
+        labels.push(label);
+        data.push(revenueMap[key] ?? 0);
+    }
+
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Doanh thu (VND)',
+                data,
+                borderRadius: 6,
+                barThickness: 22
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback(value) {
+                            return new Intl.NumberFormat('vi-VN', {
+                                style: 'currency',
+                                currency: 'VND'
+                            }).format(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+});
+</script>

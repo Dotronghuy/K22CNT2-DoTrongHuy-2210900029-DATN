@@ -1,0 +1,39 @@
+{{#> _wrappers/user-wrapper}}
+
+<section class="page-hero">
+    <div class="container">
+        <p class="eyebrow">GIỎ HÀNG CỦA BẠN</p>
+        <h1>Sẵn sàng để Thanh toán</h1>
+        <p>Điều chỉnh số lượng hoặc tiếp tục mua sắm trước khi thanh toán.</p>
+    </div>
+</section>
+
+<main class="container section">
+    <div class="cart-grid">
+        <div class="table-responsive">
+            <div class="cart-table" id="cartItems">
+              
+            </div>
+        </div>
+        <div class="summary">
+            <h3>Tóm tắt đơn hàng</h3>
+            <div class="summary-row">
+                <span>Tổng sản phẩm</span>
+                <strong id="totalQuantity">$0.00</strong>
+            </div>
+        
+            <div class="summary-row total">
+                <span>Tổng tiền thanh toán:</span>
+                <strong id="totalPrice">$0.00</strong>
+            </div>
+            <div class="promo-actions" style="margin-top:12px;">
+                <a class="btn ghost" href="/products">Tiếp tục mua sắm</a>
+                <button class="btn primary" id="checkoutBtn">Mua hàng</button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script type="module" src="/javascripts/user/cart.module.js"></script>
+
+{{/ _wrappers/user-wrapper}}
