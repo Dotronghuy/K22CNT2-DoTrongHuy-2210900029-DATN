@@ -85,12 +85,21 @@ class Product {
         this.thumbnails.forEach(t => t.classList.remove("active"));
 
         const currentThumb = this.thumbnails[this.currentIndex];
+        if (!currentThumb) return; // Bảo vệ nếu index không hợp lệ
+
         currentThumb.classList.add("active");
 
         this.mainImage.src = currentThumb.src;
 
         this.mainImage.classList.add("fade");
         setTimeout(() => this.mainImage.classList.remove("fade"), 200);
+
+        // Code mới: Cuộn thumbnail hiện tại vào giữa container
+        currentThumb.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest',
+            inline: 'center'
+        });
     }
 
     handleThumbnailClick(thumb) {
