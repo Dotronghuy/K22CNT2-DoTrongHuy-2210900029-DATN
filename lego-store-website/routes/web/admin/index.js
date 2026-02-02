@@ -12,6 +12,7 @@ router.use('/categories', authAdmin, require('./categories'));
 router.use('/brands', authAdmin, require('./brands'));
 router.use('/orders', authAdmin, require('./orders'));
 router.use('/customers', authAdmin, require('./customers'));
+router.use('/reviews', authAdmin, require('./reviews'));
 
 // router.use('/stock-entries', authAdmin, require('./stockEntries'));
 

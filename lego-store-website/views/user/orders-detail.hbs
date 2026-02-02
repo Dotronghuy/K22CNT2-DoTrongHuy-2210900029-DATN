@@ -99,13 +99,21 @@
         <div class="payment-right">
             <div class="payment-summary">
                 <h3>Trạng thái đơn hàng</h3>
-
+                <div class="summary-row">
+                    <span>Phương thức thanh toán:</span>
+                    <strong>
+                        {{#if (eq order.paymentMethod "cod")}}Thanh toán khi nhận hàng{{/if}}
+                        {{#if (eq order.paymentMethod "vnpay")}}VNPay{{/if}}
+                    </strong>
+                </div>
+                {{#if (eq order.paymentMethod "vnpay")}}
                 <div class="summary-row">
                     <span>Trạng thái thanh toán:</span>
                     <strong> {{#if (eq order.paymentStatus "unpaid")}}Chưa thanh toán{{/if}}
                         {{#if (eq order.paymentStatus "paid")}}Đã thanh toán{{/if}}
                         {{#if (eq order.paymentStatus "refunded")}}Đã hoàn tiền{{/if}}</strong>
                 </div>
+                {{/if}}
                 <div class="summary-row">
                     <span>Trạng thái đơn:</span>
                     <strong> {{formatOrderStatus order.status}}</strong>

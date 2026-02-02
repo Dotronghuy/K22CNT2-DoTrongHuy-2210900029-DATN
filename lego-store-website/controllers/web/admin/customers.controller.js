@@ -39,7 +39,7 @@ class CustomersController {
 
             const startIndex = (page - 1) * limit;
             const endIndex = Math.min(startIndex + users.length, totalItems);
- 
+
             res.render('admin/customers', {
                 title: 'Quản lý người dùng',
                 users,

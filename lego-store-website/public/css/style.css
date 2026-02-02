@@ -791,7 +791,7 @@ Sidebar
 
 /* Logout section at the bottom */
 .admin-sidebar .logout-section {
-  margin-top: auto;
+  margin-top: 16px;
   padding: 20px 16px 0;
   border-top: 1px solid #313D4F;
 }
@@ -2476,6 +2476,27 @@ Common
   cursor: not-allowed;
 }
 
+.user-layout {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background-color: transparent;
+}
+.user-layout .lego-background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background-color: #cbd5db;
+}
+.user-layout .lego-background-container canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 .user-layout .hero {
   height: calc(100vh - 77px);
   position: relative;
@@ -2652,6 +2673,7 @@ Common
   justify-content: end;
   gap: 12px;
   color: #1f2933;
+  margin-bottom: 16px;
 }
 .user-layout .sort-price i {
   color: #1f2933;
@@ -2863,6 +2885,10 @@ Common
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 24px;
   margin: 26px 0;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
 }
 .detail-layout .gallery-main {
   background: #ffffff;
@@ -2942,6 +2968,8 @@ Common
   margin-bottom: 12px;
 }
 .detail-layout .detail-info .product-price {
+  margin-top: 12px;
+  font-size: 36px;
   color: #e4002b;
 }
 .detail-layout .detail-info .variant-group {
@@ -3012,7 +3040,6 @@ Common
   justify-content: center;
   border-radius: 10px;
   padding: 8px 10px;
-  height: 100%;
   color: white;
   aspect-ratio: 1/1;
 }
@@ -3024,6 +3051,25 @@ Common
 .detail-layout .detail-info .quantity-selector input[type=number] {
   -moz-appearance: textfield;
   /* Firefox */
+}
+.detail-layout .trust-badge_container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+.detail-layout .trust-badge_container .trust-badge_card {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.detail-layout .trust-badge_container img {
+  width: 100%;
+  height: auto;
+  max-width: 100px;
 }
 
 .cart-grid {
@@ -3142,6 +3188,10 @@ Common
 
 .table-responsive {
   overflow-x: auto;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px;
 }
 
 #profileForm,
@@ -3162,7 +3212,6 @@ Common
   border: 1px solid #e5e7eb;
   border-radius: 16px;
   padding: 24px;
-  margin-top: 32px;
 }
 #profileForm #profileAvatar,
 #changePasswordForm #profileAvatar {
@@ -3342,6 +3391,9 @@ textarea:focus {
   justify-content: space-between;
   margin: 8px 0;
   color: #9aa3c2;
+}
+.payment-grid .payment-summary .summary-row strong {
+  text-align: right;
 }
 .payment-grid .payment-summary .total {
   color: #1f2933;
@@ -3663,6 +3715,12 @@ textarea:focus {
   background-color: #ffffff;
 }
 
+.review-section {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 24px !important;
+}
 .review-section .review-user-info {
   display: flex;
   align-items: center;
@@ -3700,16 +3758,15 @@ textarea:focus {
 .review-section .rating-average {
   display: flex;
   align-items: center;
-  gap: 24px;
-  border-top: 1px solid #ffffff;
-  border-bottom: 1px solid #ffffff;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 .review-section .rating-average .average-number,
 .review-section .rating-average .rating-group {
   padding: 12px;
 }
 .review-section .rating-average .average-number {
-  border-right: 1px solid #ffffff;
+  border-right: 1px solid #e5e7eb;
 }
 .review-section .review-card {
   background: #ffffff;

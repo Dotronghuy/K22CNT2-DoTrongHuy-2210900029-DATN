@@ -5,11 +5,147 @@ const { success, error } = require('../../../helpers/response');
 class HomeController {
     async overview(req, res) {
         try {
+            // Reusable product aggregation stages
+            const productAggregationStages = [
+                {
+                    $lookup: {
+                        from: 'brands',
+                        localField: 'brandId',
+                        foreignField: '_id',
+                        as: 'brand'
+                    }
+                },
+                {
+                    $addFields: {
+                        brandName: {
+                            $ifNull: [{ $arrayElemAt: ['$brand.name', 0] }, '']
+                        }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'stockEntries',
+                        localField: '_id',
+                        foreignField: 'productId',
+                        as: 'stockEntries'
+                    }
+                },
+                {
+                    $addFields: {
+                        hasStock: {
+                            $cond: [
+                                { $gt: [{ $size: '$variantCombinations' }, 0] },
+                                {
+                                    $gt: [
+                                        {
+                                            $size: {
+                                                $filter: {
+                                                    input: '$stockEntries',
+                                                    as: 'se',
+                                                    cond: {
+                                                        $and: [
+                                                            { $eq: ['$$se.status', 'imported'] },
+                                                            { $gt: ['$$se.remainingQuantity', 0] },
+                                                            { $ne: ['$$se.variantCombinationId', null] }
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        0
+                                    ]
+                                },
+                                {
+                                    $gt: [
+                                        {
+                                            $size: {
+                                                $filter: {
+                                                    input: '$stockEntries',
+                                                    as: 'se',
+                                                    cond: {
+                                                        $and: [
+                                                            { $eq: ['$$se.status', 'imported'] },
+                                                            { $gt: ['$$se.remainingQuantity', 0] },
+                                                        ]
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        0
+                                    ]
+                                }
+                            ]
+                        }
+                    }
+                },
+                { $match: { hasStock: true, isActive: true } },
+                {
+                    $addFields: {
+                        images: {
+                            $cond: [
+                                { $eq: ['$hasVariants', true] },
+                                {
+                                    $reduce: {
+                                        input: '$variantCombinations',
+                                        initialValue: [],
+                                        in: {
+                                            $concatArrays: [
+                                                '$$value',
+                                                { $ifNull: ['$$this.images', []] }
+                                            ]
+                                        }
+                                    }
+                                },
+                                '$images'
+                            ]
+                        }
+                    }
+                },
+                {
+                    $addFields: {
+                        price: {
+                            $cond: [
+                                { $eq: ['$hasVariants', true] },
+                                {
+                                    $min: {
+                                        $map: {
+                                            input: '$variantCombinations',
+                                            as: 'vc',
+                                            in: '$$vc.price'
+                                        }
+                                    }
+                                },
+                                '$price'
+                            ]
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        brand: 0,
+                        stockEntries: 0,
+                        hasStock: 0,
+                        variantCombinations: 0
+                    }
+                }
+            ];
+
+            // 1. Get New Products (Sorted by createdAt)
+            const newProducts = await Product.aggregate([
+                ...productAggregationStages,
+                { $sort: { createdAt: -1 } },
+                { $limit: 8 }
+            ]);
+
+            // 2. Get Best Selling Products (Random sample for now, or you can implement sales count logic)
+            const bestSellingProducts = await Product.aggregate([
+                ...productAggregationStages,
+                { $sample: { size: 8 } }
+            ]);
+
+            // 3. Get Products by Category
             const categoryBlocks = await Category.aggregate([
                 { $match: { isActive: true } },
-
-                // { $sample: { size: 4 } },
-
                 {
                     $lookup: {
                         from: 'products',
@@ -28,154 +164,22 @@ class HomeController {
                                     }
                                 }
                             },
-
-                            {
-                                $lookup: {
-                                    from: 'brands',
-                                    localField: 'brandId',
-                                    foreignField: '_id',
-                                    as: 'brand'
-                                }
-                            },
-
+                            ...productAggregationStages,
                             {
                                 $addFields: {
-                                    brandName: {
-                                        $ifNull: [{ $arrayElemAt: ['$brand.name', 0] }, '']
-                                    }
-                                }
-                            },
-
-
-                            {
-                                $lookup: {
-                                    from: 'stockEntries',
-                                    localField: '_id',
-                                    foreignField: 'productId',
-                                    as: 'stockEntries'
-                                }
-                            },
-
-                            {
-                                $addFields: {
-                                    hasStock: {
-                                        $cond: [
-                                            { $gt: [{ $size: '$variantCombinations' }, 0] },
-
-                                            {
-                                                $gt: [
-                                                    {
-                                                        $size: {
-                                                            $filter: {
-                                                                input: '$stockEntries',
-                                                                as: 'se',
-                                                                cond: {
-                                                                    $and: [
-                                                                        { $eq: ['$$se.status', 'imported'] },
-                                                                        { $gt: ['$$se.remainingQuantity', 0] },
-                                                                        { $ne: ['$$se.variantCombinationId', null] }
-                                                                    ]
-                                                                }
-                                                            }
-                                                        }
-                                                    },
-                                                    0
-                                                ]
-                                            },
-
-                                            {
-                                                $gt: [
-                                                    {
-                                                        $size: {
-                                                            $filter: {
-                                                                input: '$stockEntries',
-                                                                as: 'se',
-                                                                cond: {
-                                                                    $and: [
-                                                                        { $eq: ['$$se.status', 'imported'] },
-                                                                        { $gt: ['$$se.remainingQuantity', 0] },
-                                                                    ]
-                                                                }
-                                                            }
-                                                        }
-                                                    },
-                                                    0
-                                                ]
-                                            }
-                                        ]
-                                    }
-                                }
-                            },
-
-                            { $match: { hasStock: true } },
-
-                            {
-                                $addFields: {
-                                    images: {
-                                        $cond: [
-                                            { $eq: ['$hasVariants', true] },
-                                            {
-                                                $reduce: {
-                                                    input: '$variantCombinations',
-                                                    initialValue: [],
-                                                    in: {
-                                                        $concatArrays: [
-                                                            '$$value',
-                                                            { $ifNull: ['$$this.images', []] }
-                                                        ]
-                                                    }
-                                                }
-                                            },
-                                            '$images'
-                                        ]
-                                    },
                                     categoryName: '$$categoryName'
                                 }
                             },
-
-                            {
-                                $addFields: {
-                                    price: {
-                                        $cond: [
-                                            { $eq: ['$hasVariants', true] },
-
-                                            {
-                                                $min: {
-                                                    $map: {
-                                                        input: '$variantCombinations',
-                                                        as: 'vc',
-                                                        in: '$$vc.price'
-                                                    }
-                                                }
-                                            },
-
-                                            '$price'
-                                        ]
-                                    }
-                                }
-                            },
-
-                            { $sample: { size: 8 } },
-
-                            {
-                                $project: {
-                                    brand: 0,
-                                    stockEntries: 0,
-                                    hasStock: 0,
-                                    variantCombinations: 0
-                                }
-                            }
+                            { $sample: { size: 8 } }
                         ],
                         as: 'products'
                     }
                 },
-
                 {
                     $match: {
                         'products.0': { $exists: true }
                     }
                 },
-
                 {
                     $project: {
                         _id: 1,
@@ -187,7 +191,9 @@ class HomeController {
 
             res.render('user/home', {
                 title: 'Trang chủ',
-                categoryBlocks: categoryBlocks
+                newProducts,
+                bestSellingProducts,
+                categoryBlocks
             });
 
         } catch (err) {
@@ -195,6 +201,8 @@ class HomeController {
             res.status(500).render('user/home', {
                 title: 'Trang chủ',
                 newProducts: [],
+                bestSellingProducts: [],
+                categoryBlocks: [],
                 errorMsg: 'Có lỗi xảy ra khi tải danh sách sản phẩm.'
             });
         }
@@ -202,3 +210,4 @@ class HomeController {
 }
 
 module.exports = new HomeController();
+

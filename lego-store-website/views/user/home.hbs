@@ -31,6 +31,69 @@
     </ul>
   </section>
 
+  <!-- New Arrivals Section -->
+  <section class="section products-preview">
+    <div class="container section-header">
+      <div>
+        <p class="eyebrow">Mới nhất</p>
+        <h2>Sản phẩm mới</h2>
+      </div>
+      <a class="link-arrow" href="/products">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="container product-grid">
+      {{#each newProducts}}
+      <article class="product-card">
+        <a href="/products/{{this._id}}">
+          <div class="card-media">
+            <img src="{{this.images.[0]}}" alt="{{this.name}}">
+          </div>
+          <div class="card-body">
+            <p class="tag">{{this.brandName}}</p>
+            <a href="/products/{{this._id}}">{{this.name}}</a>
+            <div class="card-footer">
+              <span class="price">{{formatCurrency this.price}}</span>
+              <button data-id="{{this._id}}" class="btn btn-primary" data-add="falcon">
+                <i class="bi bi-bag-plus"></i>
+              </button>
+            </div>
+          </div>
+        </a>
+      </article>
+      {{/each}}
+    </div>
+  </section>
+
+  <!-- Best Sellers Section -->
+  <section class="section products-preview">
+    <div class="container section-header">
+      <div>
+        <p class="eyebrow">Hot</p>
+        <h2>Sản phẩm bán chạy</h2>
+      </div>
+      <a class="link-arrow" href="/products">Xem tất cả <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="container product-grid">
+      {{#each bestSellingProducts}}
+      <article class="product-card">
+        <a href="/products/{{this._id}}">
+          <div class="card-media">
+            <img src="{{this.images.[0]}}" alt="{{this.name}}">
+          </div>
+          <div class="card-body">
+            <p class="tag">{{this.brandName}}</p>
+            <a href="/products/{{this._id}}">{{this.name}}</a>
+            <div class="card-footer">
+              <span class="price">{{formatCurrency this.price}}</span>
+              <button data-id="{{this._id}}" class="btn btn-primary" data-add="falcon">
+                <i class="bi bi-bag-plus"></i>
+              </button>
+            </div>
+          </div>
+        </a>
+      </article>
+      {{/each}}
+    </div>
+  </section>
 
   {{#each categoryBlocks}}
   <section class="section products-preview">

@@ -13,7 +13,10 @@
     <div class="nav-actions">
       <a class="icon-btn cart" href="/cart" aria-label="Giỏ hàng">
         <i class="bi bi-cart3"></i>
-          <span id="cart-badge">{{user.cartQuantity}}</span>
+        {{!-- <span id="cart-badge">{{user.cartQuantity}}</span> --}}
+        {{#if user}}
+        <span id="cart-badge">{{user.cartQuantity}}</span>
+        {{/if}}
       </a>
       {{#if user}}
 

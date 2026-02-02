@@ -111,6 +111,7 @@ class PaymentController {
                 districtId: user.districtId,
                 wardCode: user.wardCode,
                 paymentMethod: paymentType === 'vnpay' ? 'vnpay' : 'cod',
+                paymentStatus: 'unpaid',
                 gateway: paymentType === 'vnpay' ? 'vnpay' : undefined,
                 totalPrice,
                 status: 'pending',
@@ -169,7 +170,7 @@ class PaymentController {
                 vnp_Params['vnp_ReturnUrl'] = returnUrl;
                 vnp_Params['vnp_IpAddr'] = ipAddr;
                 vnp_Params['vnp_CreateDate'] = createDate;
-        
+
 
                 vnp_Params = sortObject(vnp_Params);
 
@@ -277,7 +278,7 @@ class PaymentController {
                 vnp_Params['vnp_ReturnUrl'] = returnUrl;
                 vnp_Params['vnp_IpAddr'] = ipAddr;
                 vnp_Params['vnp_CreateDate'] = createDate;
-    
+
 
                 vnp_Params = sortObject(vnp_Params);
 

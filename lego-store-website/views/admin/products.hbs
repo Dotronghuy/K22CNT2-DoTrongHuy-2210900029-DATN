@@ -11,8 +11,8 @@
 
     <div class="section animate-slide-in-up mt-2 section-filter">
 
-        <input type="text" class="filter-search fillter-btn" placeholder="Tìm kiếm tên sản phẩm"
-            value="{{currentFilters.q}}" onkeypress="if(event.key==='Enter'){ applySearch(); }">
+        <input type="text" class="filter-search fillter-btn" placeholder="Tìm kiếm tên sản phẩm" value="{{q}}"
+            onkeypress="if(event.key==='Enter'){ applySearch(); }">
 
         <div class="filter-divider"></div>
 
@@ -102,27 +102,27 @@
 
 <script type="module" src="/javascripts/admin/{{activePage}}.module.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.querySelector('.filter-search');
-    const filterBtn = document.getElementById('applyFilterBtn');
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.querySelector('.filter-search');
+        const filterBtn = document.getElementById('applyFilterBtn');
 
-    const applyFilters = () => {
-        const params = new URLSearchParams(window.location.search);
+        const applyFilters = () => {
+            const params = new URLSearchParams(window.location.search);
 
-        const q = searchInput.value.trim();
-        if (q) params.set('q', q);
-        else params.delete('q');
+            const q = searchInput.value.trim();
+            if (q) params.set('q', q);
+            else params.delete('q');
 
-        params.set('page', '1');
+            params.set('page', '1');
 
-        window.location.search = params.toString();
-    };
+            window.location.search = params.toString();
+        };
 
-    filterBtn.addEventListener('click', applyFilters);
+        filterBtn.addEventListener('click', applyFilters);
 
-    searchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') applyFilters();
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') applyFilters();
+        });
     });
-});
 </script>
 {{/ _wrappers/admin-wrapper}}

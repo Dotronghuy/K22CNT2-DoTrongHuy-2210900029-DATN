@@ -9,8 +9,8 @@
 
     <div class="section animate-slide-in-up mt-2 section-filter">
 
-        <input type="text" class="filter-search fillter-btn" placeholder="Tìm kiếm tên người dùng"
-            value="{{currentFilters.q}}" onkeypress="if(event.key==='Enter'){ applySearch(); }">
+        <input type="text" class="filter-search fillter-btn" placeholder="Tìm kiếm tên người dùng" value="{{q}}"
+            onkeypress="if(event.key==='Enter'){ applySearch(); }">
 
         <div class="filter-divider"></div>
 
@@ -39,12 +39,19 @@
                         <td><span class="ellipsis line-2">{{this.fullName}}</span></td>
                         <td><span class="ellipsis line-2">{{this.email}}</span></td>
                         <td><span class="ellipsis line-2">{{this.phoneNumber}}</span></td>
-                        <td class="fit center">
+                        {{!-- <td class="fit center">
                             <div class="switch" data-active="{{#if this.status}}true{{else}}false{{/if}}"
                                 data-id="{{this._id}}">
                                 <div class="switch-slider"></div>
                             </div>
+                        </td> --}}
+                        <td class="fit center">
+                            <div class="switch" data-active="{{#if (eq this.status 1)}}true{{else}}false{{/if}}"
+                                data-id="{{this._id}}">
+                                <div class="switch-slider"></div>
+                            </div>
                         </td>
+
                     </tr>
                     {{/each}}
 

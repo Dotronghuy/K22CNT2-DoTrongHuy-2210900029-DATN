@@ -17,6 +17,7 @@ const { createAccessToken, createRefreshToken } = require('../../../utils/jwt');
 
 class AuthController {
 
+    // [POST] /api/login
     async login(req, res) {
         try {
             const { email, password } = req.body;
@@ -27,16 +28,24 @@ class AuthController {
                 return error(res, 400, 'Vui lòng nhập email và mật khẩu.');
             }
 
+            // Tìm user
             const user = await User.findOne({ email });
             if (!user) return error(res, 401, 'Email hoặc mật khẩu không đúng.');
 
-            if (user.status !== 1) {
-                return error(res, 403, 'Tài khoản chưa được xác nhận. Vui lòng kiểm tra email.');
+            // Kiểm tra verify email
+            if (user.status === 0) {
+                return error(res, 403, 'Tài khoản của bạn chưa được xác minh email. Vui lòng kiểm tra hộp thư và hoàn tất xác minh để tiếp tục.');
             }
 
+            if (user.status === 2) {
+                return error(res, 401, 'Tài khoản của bạn hiện đang tạm thời bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ thêm.');
+            }
+
+            // So khớp mật khẩu
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) return error(res, 401, 'Email hoặc mật khẩu không đúng.');
 
+            // === Tạo JWT access token ===
             const accessToken = createAccessToken({ user_id: user._id, role: user.role, email: user.email });
             const refreshToken = createRefreshToken({ user_id: user._id, role: user.role, email: user.email });
 
@@ -50,6 +59,7 @@ class AuthController {
                 expiresAt
             });
 
+            // === Set cookie ===
             res.cookie('accessToken', accessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
@@ -79,10 +89,10 @@ class AuthController {
         }
     }
 
+    // [POST] /api/register
     async register(req, res) {
         try {
             const { fullName, email, password } = req.body;
-
             const hashedPassword = await bcrypt.hash(password, 10);
 
             const newUser = await User.create({
@@ -145,6 +155,7 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
         }
     }
 
+    // [POST] /api/resend-verification
     async resendVerification(req, res) {
         try {
             const { email } = req.body;
@@ -156,6 +167,15 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
             if (user.status === 1)
                 return success(res, 200, 'Tài khoản đã được xác nhận. Bạn có thể đăng nhập.');
 
+            if (user.status === 2) {
+                return error(
+                    res,
+                    403,
+                    'Tài khoản của bạn hiện đang bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.'
+                );
+            }
+
+            // Lấy token xác nhận mới nhất của user
             const record = await UserToken.findOne({ userId: user._id }).sort({ createdAt: -1 });
 
             const now = new Date();
@@ -180,6 +200,7 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
                 expiresAt
             });
 
+            // Gửi email
             const transporter = nodemailer.createTransport({
                 host: process.env.SMTP_HOST || 'smtp.gmail.com',
                 port: process.env.SMTP_PORT || 465,
@@ -208,6 +229,7 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
         }
     }
 
+    // [POST] /api/request-reset-password
     async requestResetPassword(req, res) {
         try {
             const { email } = req.body;
@@ -218,8 +240,20 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
                 return success(res, 200, 'Nếu email tồn tại, liên kết đặt lại mật khẩu đã được gửi.');
             }
 
-            if (user.status !== 1) {
-                return error(res, 403, 'Tài khoản chưa được kích hoạt.');
+            if (user.status === 0) {
+                return error(
+                    res,
+                    403,
+                    'Tài khoản chưa được xác minh email. Vui lòng xác minh trước khi đặt lại mật khẩu.'
+                );
+            }
+
+            if (user.status === 2) {
+                return error(
+                    res,
+                    403,
+                    'Tài khoản của bạn hiện đang bị khóa. Vui lòng liên hệ quản trị viên để được hỗ trợ.'
+                );
             }
 
             const latestToken = await UserToken.findOne({
@@ -228,7 +262,7 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
             }).sort({ createdAt: -1 });
 
             const now = new Date();
-            if (latestToken && !latestToken.used && latestToken.expiresAt > now) {
+            if (latestToken && !latestToken.expiresAt && latestToken.expiresAt > now) {
                 const remaining = Math.ceil((latestToken.expiresAt - now) / 60000);
                 return success(
                     res,
@@ -290,6 +324,7 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
                 await RefreshToken.deleteOne({ token: refreshToken });
             }
 
+            // Xoá cookie
             res.clearCookie('accessToken');
             res.clearCookie('refreshToken');
 
@@ -330,7 +365,7 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
                 return error(res, 400, 'Liên kết đặt lại mật khẩu không hợp lệ.');
             }
 
-            if (record.used) {
+            if (record.verified) {
                 return error(res, 400, 'Liên kết này đã được sử dụng.');
             }
 
@@ -338,11 +373,21 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
                 return error(res, 400, 'Liên kết đặt lại mật khẩu đã hết hạn.');
             }
 
+            // === 3. Lấy user ===
             const user = await User.findById(record.userId);
             if (!user) {
                 return error(res, 404, 'Tài khoản không tồn tại.');
             }
 
+            if (user.status !== 1) {
+                return error(
+                    res,
+                    403,
+                    'Không thể đặt lại mật khẩu cho tài khoản này.'
+                );
+            }
+
+            // === 4. Hash mật khẩu mới ===
             const bcrypt = require('bcrypt');
             const saltRounds = 10;
             const hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -353,11 +398,11 @@ Nếu bạn không thực hiện đăng ký, hãy bỏ qua email này.`,
 
             record.verified = true;
             await record.save();
-            await UserToken.deleteMany({
-                userId: user._id,
-                type: 'reset_password',
-                verified: true
-            });
+            // await UserToken.deleteMany({
+            //     userId: user._id,
+            //     type: 'reset_password',
+            //     verified: false
+            // });
 
             return success(res, 200, 'Đổi mật khẩu thành công. Bạn có thể đăng nhập ngay.');
 

@@ -1,104 +1,380 @@
 {{#> _wrappers/user-wrapper}}
 
+<style>
+    .profile-page {
+        padding: 40px 0 80px;
+        background: transparent;
+    }
+
+    .profile-tabs-container {}
+
+    .profile-tabs-nav {
+        display: flex;
+        gap: 8px;
+        border-bottom: 2px solid #e5e7eb;
+        padding: 0 4px;
+    }
+
+    .profile-tab-btn {
+        padding: 14px 28px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        color: #6b7280;
+        transition: all 0.2s ease;
+        position: relative;
+        bottom: -2px;
+    }
+
+    .profile-tab-btn:hover {
+        color: #111827;
+        background: #f9fafb;
+    }
+
+    .profile-tab-btn.active {
+        color: #df2020;
+        border-bottom-color: #df2020;
+        background: transparent;
+    }
+
+    .profile-tab-content {
+        display: none;
+    }
+
+    .profile-tab-content.active {
+        display: block;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-card {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .profile-avatar {
+        position: relative;
+        flex-shrink: 0;
+    }
+
+    .profile-avatar img {
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #f3f4f6;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+    }
+
+    .change-avatar-btn {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
+        transition: all 0.2s ease;
+    }
+
+    .change-avatar-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(37, 99, 235, 0.4);
+    }
+
+    .profile-header-info h2 {
+        margin: 0 0 4px 0;
+        font-size: 24px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .profile-header-info p {
+        margin: 0;
+        color: #6b7280;
+        font-size: 14px;
+    }
+
+    .profile-info {
+        display: grid;
+        gap: 24px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .form-group label {
+        font-size: 14px;
+        font-weight: 500;
+        color: #374151;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 12px 16px;
+        border: 1.5px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.2s ease;
+        background: white;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .form-group input:disabled {
+        background: #f9fafb;
+        color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    .shipping-input {
+        margin-top: 8px;
+    }
+
+    .shipping-input:first-of-type {
+        margin-top: 0;
+    }
+
+    .form-group select {
+        margin-top: 8px;
+    }
+
+    .save-btn {
+        margin-top: 8px;
+        padding: 14px 32px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+    }
+
+    .save-btn:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+    }
+
+    .save-btn:active {
+        transform: translateY(0);
+    }
+
+    .changePasswordForm-right h3 {
+        margin: 0 0 24px 0;
+        font-size: 20px;
+        font-weight: 600;
+        color: #111827;
+    }
+
+    .password-info-box {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .password-info-box i {
+        color: #2563eb;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .password-info-box p {
+        margin: 0;
+        font-size: 13px;
+        color: #1e40af;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .profile-header-section {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .form-card {
+            padding: 24px;
+        }
+
+        .profile-tabs-nav {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .profile-tab-btn {
+            white-space: nowrap;
+        }
+    }
+</style>
+
 <section class="page-hero">
     <div class="container">
         <p class="eyebrow">Hồ sơ tài khoản</p>
         <h1>Trang cá nhân</h1>
-        <p>Xem thông tin cá nhân của bạn.</p>
+        <p>Quản lý thông tin cá nhân và bảo mật tài khoản của bạn.</p>
     </div>
 </section>
 
-
 <div class="profile-page">
+    <div class="profile-tabs-container container">
+        <!-- Tab Navigation -->
+        <div class="profile-tabs-nav">
+            <button class="profile-tab-btn active" data-tab="info">
+                <i class="bi bi-person"></i> Thông tin cá nhân
+            </button>
+            <button class="profile-tab-btn" data-tab="password">
+                <i class="bi bi-shield-lock"></i> Đổi mật khẩu
+            </button>
+        </div>
 
-    <div class="profile-wrapper">
-
-        <div class="container profile-container">
+        <!-- Tab Content: Thông tin cá nhân -->
+        <div class="profile-tab-content active" data-tab-content="info">
             <form class="form-card" id="profileForm" enctype="multipart/form-data">
-
-                <div class="profile-avatar">
-
-                    <img src="{{#if user.avatarUrl}}{{user.avatarUrl}}{{else}}/images/banner-modal.jpg{{/if}}"
-                        alt="Avatar" id="profileAvatar">
-
-
-                    <button type="button" class="change-avatar-btn">Đổi ảnh</button>
-                    <input type="file" id="avatarInput" name="avatar" accept="image/*" hidden>
+                <div class="profile-header-section">
+                    <div class="profile-avatar">
+                        <img src="{{#if user.avatarUrl}}{{user.avatarUrl}}{{else}}/images/banner-modal.jpg{{/if}}"
+                            alt="Avatar" id="profileAvatar">
+                        <button type="button" class="change-avatar-btn">
+                            <i class="bi bi-camera"></i> Đổi ảnh
+                        </button>
+                        <input type="file" id="avatarInput" name="avatar" accept="image/*" hidden>
+                    </div>
+                    {{!-- <div class="profile-header-info">
+                        <h2>{{user.fullName}}</h2>
+                        <p>{{user.email}}</p>
+                    </div> --}}
                 </div>
 
                 <div class="profile-info">
-
                     <div class="form-group">
-                        <label>Họ tên</label>
+                        <label><i class="bi bi-person"></i> Họ và tên</label>
                         <input type="text" value="{{user.fullName}}" id="fullNameInput" name="fullName" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Email</label>
+                        <label><i class="bi bi-envelope"></i> Email</label>
                         <input type="text" value="{{user.email}}" id="emailInput" name="email" disabled>
                     </div>
-            
 
                     <div class="form-group">
-                        <label>Thông tin nhận hàng</label>
-
+                        <label><i class="bi bi-geo-alt"></i> Thông tin nhận hàng</label>
                         <input type="text" placeholder="Số điện thoại" id="shippingPhoneInput" name="phoneNumber"
                             class="shipping-input" value="{{user.phoneNumber}}">
-
                         <select id="shippingProvinceSelect" name="provinceId" data-user-value="{{user.provinceId}}">
                             <option value="">Chọn tỉnh/thành phố</option>
                         </select>
-
                         <select id="shippingDistrictSelect" name="districtId" data-user-value="{{user.districtId}}">
-                            <option value="">Chọn quận</option>
+                            <option value="">Chọn quận/huyện</option>
                         </select>
-
                         <select id="shippingWardSelect" name="wardCode" data-user-value="{{user.wardCode}}">
                             <option value="">Chọn phường/xã</option>
                         </select>
-
-                        <input type="text" placeholder="Địa chỉ" id="shippingAddressInput" name="address"
+                        <input type="text" placeholder="Địa chỉ chi tiết" id="shippingAddressInput" name="address"
                             value="{{user.address}}" class="shipping-input">
                     </div>
 
-                    <button type="submit" class="save-btn">Lưu thay đổi</button>
-
+                    <button type="submit" class="save-btn">
+                        <i class="bi bi-check-circle"></i> Lưu thay đổi
+                    </button>
                 </div>
-            </form>
-            <form id="changePasswordForm" class="change-password-right form-card">
-
-                <div class="changePasswordForm-left">
-
-                </div>
-
-                <div class="changePasswordForm-right">
-                    <h3>Đổi mật khẩu</h3>
-
-                    <div class="form-group">
-                        <label>Mật khẩu hiện tại</label>
-                        <input type="password" name="oldPassword" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Mật khẩu mới</label>
-                        <input type="password" name="newPassword" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Nhập lại mật khẩu mới</label>
-                        <input type="password" name="confirmPassword" required>
-                    </div>
-                    <button type="submit" class="save-btn">Cập nhật mật khẩu</button>
-
-                </div>
-
-
             </form>
         </div>
 
-    </div>
+        <!-- Tab Content: Đổi mật khẩu -->
+        <div class="profile-tab-content" data-tab-content="password">
+            <form id="changePasswordForm" style="display: block;" class="form-card">
+                {{!-- <div class="changePasswordForm-left"></div> --}}
+                <div class="changePasswordForm-right">
+                    <h3><i class="bi bi-shield-lock"></i> Đổi mật khẩu</h3>
 
+                    <div class="password-info-box">
+                        <i class="bi bi-info-circle"></i>
+                        <p>Mật khẩu mới phải có ít nhất 6 ký tự, bao gồm chữ và số để đảm bảo an toàn.
+                        </p>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="bi bi-lock"></i> Mật khẩu hiện tại</label>
+                        <input type="password" name="oldPassword" placeholder="Nhập mật khẩu hiện tại" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="bi bi-key"></i> Mật khẩu mới</label>
+                        <input type="password" name="newPassword" placeholder="Nhập mật khẩu mới" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label><i class="bi bi-check2-circle"></i> Xác nhận mật khẩu mới</label>
+                        <input type="password" name="confirmPassword" placeholder="Nhập lại mật khẩu mới" required>
+                    </div>
+
+                    <button type="submit" class="save-btn">
+                        <i class="bi bi-shield-check"></i> Cập nhật mật khẩu
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
+
+<script>
+    // Tab switching logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const tabBtns = document.querySelectorAll('.profile-tab-btn');
+        const tabContents = document.querySelectorAll('.profile-tab-content');
+
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const targetTab = btn.dataset.tab;
+
+                // Remove active class from all buttons and contents
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+
+                // Add active class to clicked button and corresponding content
+                btn.classList.add('active');
+                document.querySelector(`[data-tab-content="${targetTab}"]`).classList.add('active');
+            });
+        });
+    });
+</script>
 
 <script type="module" src="/javascripts/user/profile.module.js"></script>
 

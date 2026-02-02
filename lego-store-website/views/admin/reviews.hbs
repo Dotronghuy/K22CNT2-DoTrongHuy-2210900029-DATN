@@ -1,0 +1,133 @@
+{{#> _wrappers/admin-wrapper}}
+
+
+<div class="categories-page">
+    <div class="page-header">
+        <h1 class="page-title">{{title}}</h1>
+
+    </div>
+
+    <div class="section animate-slide-in-up mt-2 section-filter">
+
+        <input type="text" class="filter-search fillter-btn" placeholder="Tìm kiếm tên sản phẩm, người dùng..."
+            value="{{q}}" onkeypress="if(event.key==='Enter'){ applySearch(); }">
+
+        <div class="filter-divider"></div>
+
+        <i class="bi bi-funnel-fill fillter-btn" id="applyFilterBtn"></i>
+    </div>
+
+
+    <div class="page-content">
+        <div class="section animate-slide-in-up mt-2">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="fit center">#</th>
+                        <th class="w-3">Sản phẩm</th>
+                        <th class="w-2">Người đánh giá</th>
+                        <th class="fit center">⭐</th>
+                        <th class="w-4">Nội dung</th>
+                        <th class="fit center">Trạng thái</th>
+                        <th class="fit center">Ngày</th>
+                        {{!-- <th class="fit center">Thao tác</th> --}}
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#if reviews.length}}
+
+                    {{#each reviews}}
+                    <tr>
+                        <td class="fit center">{{plusOne @index}}</td>
+                        <td>
+                            <span class="ellipsis line-2">
+                                {{#if this.product.name}}
+                                {{this.product.name}}
+                                {{else}}
+                                <em style="color: #999;">Sản phẩm đã xóa</em>
+                                {{/if}}
+                            </span>
+                        </td>
+                        <td>
+                            <div>
+                                <div class="ellipsis">{{this.user.fullName}}</div>
+                                <small style="color: #666;">{{this.user.email}}</small>
+                            </div>
+                        </td>
+                        <td class="fit center">
+                            <strong style="color: #f59e0b;">{{this.rating}}</strong>
+                        </td>
+                        <td>
+                            <span class="ellipsis line-2">
+                                {{#if this.comment}}
+                                {{this.comment}}
+                                {{else}}
+                                <em style="color: #999;">Không có nội dung</em>
+                                {{/if}}
+                            </span>
+                        </td>
+                        <td class="fit center">
+                            <div class="switch" data-active="{{#if (eq this.status 1)}}true{{else}}false{{/if}}"
+                                data-id="{{this._id}}">
+                                <div class="switch-slider"></div>
+                            </div>
+                        </td>
+                        <td class="fit center">
+                            <small>{{formatDate this.createdAt}}</small>
+                        </td>
+                        {{!-- <td class="fit center">
+                            <a href="/products/{{this.product._id}}" target="_blank" class="btn-icon"
+                                title="Xem sản phẩm">
+                                <i class="bi bi-box-arrow-up-right"></i>
+                            </a>
+                        </td> --}}
+                    </tr>
+                    {{/each}}
+
+                    {{else}}
+                    <tr>
+                        <td colspan="8" class="center">Chưa có dữ liệu</td>
+                    </tr>
+                    {{/if}}
+
+                </tbody>
+            </table>
+        </div>
+
+
+        {{> _admin/pagination pagination=pagination currentSortField=currentSortField
+        currentSortOrder=currentSortOrder}}
+    </div>
+
+
+</div>
+
+<script type="module" src="/javascripts/admin/{{activePage}}.module.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.querySelector('.filter-search');
+        const filterBtn = document.getElementById('applyFilterBtn');
+
+        const applyFilters = () => {
+            const params = new URLSearchParams(window.location.search);
+
+            const q = searchInput.value.trim();
+            if (q) params.set('q', q);
+            else params.delete('q');
+
+            params.set('page', '1');
+
+            window.location.search = params.toString();
+        };
+
+        filterBtn.addEventListener('click', applyFilters);
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') applyFilters();
+        });
+    });
+
+
+</script>
+{{/ _wrappers/admin-wrapper}}

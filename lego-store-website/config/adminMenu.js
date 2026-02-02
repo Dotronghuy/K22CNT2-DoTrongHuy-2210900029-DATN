@@ -6,4 +6,5 @@ module.exports = [
     { key: "brands", label: "Thương hiệu", icon: "bi-star", path: "/admin/brands" },
     { key: "orders", label: "Đơn hàng", icon: "bi-cart-check", path: "/admin/orders" },
     { key: "customers", label: "Khách hàng", icon: "bi-people", path: "/admin/customers" },
+    { key: "reviews", label: "Quản lý đánh giá", icon: "bi-chat-square-text", path: "/admin/reviews" },
 ];

@@ -5,3 +5,9 @@
 /Data
 /createTestUsers.js
 /public/scss
+
+/generate-users-json.js
+/users.seed.json
+/fix-old-orders.js
+/seed-orders.js
+/seed-users-from-json.js

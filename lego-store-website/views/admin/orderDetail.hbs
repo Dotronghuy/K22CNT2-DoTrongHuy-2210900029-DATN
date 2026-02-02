@@ -13,7 +13,7 @@
     <div class="page-content">
         <div class="section animate-slide-in-up mt-2">
 
-       
+
             <div class="order-info card shadow-sm p-3 mb-4">
                 <h4>Thông tin đơn hàng</h4>
                 <p><strong>Mã đơn:</strong> {{order.orderCode}}</p>
@@ -22,9 +22,24 @@
                 <p><strong>Địa chỉ:</strong> {{fullAddress}}</p>
                 <p><strong>Thanh toán:</strong> {{order.paymentMethod}} {{#if order.gateway}}({{order.gateway}}){{/if}}
                 </p>
+                {{#if (eq order.paymentMethod 'vnpay')}}
+                <p class="payment-status">
+                    <strong>Trạng thái thanh toán:</strong>
+                    <span class="badge 
+                        {{#if (eq order.paymentStatus 'paid')}}bg-success
+                        {{else if (eq order.paymentStatus 'unpaid')}}bg-warning text-dark
+                        {{else if (eq order.paymentStatus 'refunded')}}bg-secondary
+                        {{/if}}">
+                        {{#if (eq order.paymentStatus 'paid')}}Đã thanh toán
+                        {{else if (eq order.paymentStatus 'unpaid')}}Chưa thanh toán
+                        {{else if (eq order.paymentStatus 'refunded')}}Đã hoàn tiền
+                        {{else}}{{order.paymentStatus}}{{/if}}
+                    </span>
+                </p>
+                {{/if}}
                 <p class="order-status">
                     <strong>Trạng thái:</strong>
-                  
+
                 <div class="custom-select mt-1 {{#unless (lookup allowedTransitions order.status)}}disabled{{/unless}}"
                     id="orderSelect_{{order._id}}" data-value="{{order.status}}">
                     <button type="button" class="cs-trigger {{order.status}}" aria-haspopup="listbox"

@@ -46,7 +46,7 @@ const UserSchema = new mongoose.Schema({
     },
     status: {
         type: Number,
-        enum: [0, 1], // 0: Vô hiệu hóa | 1: Kích hoạt
+        enum: [0, 1, 2], // 0: Vô hiệu hóa | 1: Kích hoạt | 2: Khoá tài khoản
         default: 1
     }
 }, {

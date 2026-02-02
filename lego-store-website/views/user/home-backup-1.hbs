@@ -1,0 +1,160 @@
+{{#> _wrappers/user-wrapper}}
+
+<main>
+  <section class="hero">
+    <div class="hero-slider">
+      <div class="slide">
+        <img src="/images/banner-1.jpg" alt="Slide 1">
+        <div class="slide-content">
+          <h1>Xây dựng thế giới vui nhộn với LEGO®</h1>
+          <p>Khám phá các bộ đồ chơi sáng tạo, vui nhộn cho mọi lứa tuổi.</p>
+        </div>
+      </div>
+      <div class="slide">
+        <img src="/images/banner-2.webp" alt="Slide 2">
+        <div class="slide-content">
+          <h1>Sáng tạo không giới hạn</h1>
+          <p>Thỏa sức xây dựng mô hình theo trí tưởng tượng của bạn.</p>
+        </div>
+      </div>
+    </div>
+    <div class="header__button">
+      <button id="btn__prev"><i class="bi bi-chevron-left"></i></button>
+      <button id="btn__next"><i class="bi bi-chevron-right"></i></button>
+    </div>
+    <ul class="list_dot">
+      <li class="item__dot active"></li>
+      <li class="item__dot"></li>
+      {{!-- <li class="item__dot"></li>
+      <li class="item__dot"></li>
+      <li class="item__dot"></li> --}}
+    </ul>
+  </section>
+
+
+  {{#each categoryBlocks}}
+  <section class="section products-preview">
+    <div class="container section-header">
+      <div>
+        <p class="eyebrow">Tiêu Điểm</p>
+        <h2>{{this.categoryName}}</h2>
+      </div>
+      <a class="link-arrow" href="/products?category={{this._id}}">Xem danh mục <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="container product-grid">
+      {{#each this.products}}
+      <article class="product-card">
+        <a href="/products/{{this._id}}">
+          <div class="card-media">
+            <img src="{{this.images.[0]}}" alt="RX-93 Nu Gundam Ver.Ka">
+
+          </div>
+          <div class="card-body">
+            <p class="tag">{{this.brandName}}</p>
+            <a href="/products/{{this._id}}">{{this.name}}</a>
+            <div class="card-footer">
+              <span class="price">{{formatCurrency this.price}}</span>
+              <button data-id="{{this._id}}" class="btn btn-primary" data-add="falcon">
+                <i class="bi bi-bag-plus"></i>
+
+              </button>
+            </div>
+          </div>
+        </a>
+      </article>
+      {{/each}}
+
+    </div>
+  </section>
+  {{/each}}
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const addToCartButtons = document.querySelectorAll('button[data-add="falcon"]');
+
+    addToCartButtons.forEach(button => {
+      button.addEventListener('click', async () => {
+        const productId = button.getAttribute('data-id');
+        showLoading("Đang thêm vào giỏ hàng...");
+        try {
+          const response = await fetch('/api/cart/add', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId, quantity: 1 }),
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            showToast(result.message || "Đã thêm sản phẩm vào giỏ hàng.", "success");
+            const event = new CustomEvent("cart:update", { detail: { quantity: result.data.cartQuantity || 0 } });
+            document.dispatchEvent(event);
+          } else {
+            showToast(result.message || "Thêm vào giỏ hàng thất bại.", "error");
+          }
+        } catch (error) {
+          console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+          showToast("Lỗi khi thêm sản phẩm vào giỏ hàng.", "error");
+        } finally {
+          hideLoading();
+        }
+      });
+    });
+
+    const listBanner = document.querySelector(".hero-slider");
+    const itemBanner = listBanner.querySelectorAll(".slide");
+
+    const itemDot = document.querySelectorAll(".item__dot");
+    const btnNext = document.querySelector("#btn__next");
+    const btnPrev = document.querySelector("#btn__prev");
+
+
+    var itemActive = 0
+    var lengthBanner = itemBanner.length - 1
+
+    btnNext.addEventListener("click", () => {
+      if (itemActive + 1 > lengthBanner) {
+        itemActive = 0
+      } else {
+        itemActive++
+      }
+      loadSliderBanner()
+    })
+    btnPrev.addEventListener("click", () => {
+      if (itemActive - 1 < 0) {
+        itemActive = lengthBanner
+      } else {
+        itemActive--
+      }
+      loadSliderBanner()
+    })
+    var autoSlider = setInterval(function () {
+      btnNext.click()
+    }, 3000);
+    function loadSliderBanner() {
+      let checkLeft = itemBanner[itemActive].offsetLeft
+      listBanner.style.left = -checkLeft + 'px'
+
+      let itemBannerActive = document.querySelector(".list_dot li.active")
+      itemBannerActive.classList.remove('active')
+
+      itemDot[itemActive].classList.add('active')
+      clearInterval(autoSlider)
+      autoSlider = setInterval(function () {
+        btnNext.click()
+      }, 5000);
+    }
+    itemDot.forEach((item, key) => {
+      item.addEventListener("click", () => {
+        itemActive = key;
+        loadSliderBanner()
+      })
+    })
+
+  });
+</script>
+
+{{/ _wrappers/user-wrapper}}

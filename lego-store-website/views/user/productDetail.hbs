@@ -1,3 +1,130 @@
+<style>
+    .product-info-tabs {
+        border-top: 1px solid #eee;
+        padding-top: 30px;
+
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 24px;
+    }
+
+    .tabs-nav {
+        display: flex;
+        gap: 30px;
+        border-bottom: 2px solid #f0f0f0;
+        margin-bottom: 30px;
+    }
+
+    .tab-link {
+        background: none;
+        border: none;
+        padding: 15px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #666;
+        cursor: pointer;
+        position: relative;
+        transition: all 0.3s ease;
+    }
+
+    .tab-link:hover {
+        color: #df2020;
+    }
+
+    .tab-link.active {
+        color: #df2020;
+    }
+
+    .tab-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #df2020;
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.4s ease;
+        min-height: 200px;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Table Styles */
+    .info-table {
+        width: 100%;
+        max-width: 800px;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        border: 1px solid #eaeaea;
+    }
+
+    .info-table tr {
+        border-bottom: 1px solid #eaeaea;
+    }
+
+    .info-table td {
+        padding: 15px;
+        border-right: 1px solid #f0f0f0;
+    }
+
+    .info-table td:first-child {
+        font-weight: 600;
+        color: #333;
+        width: 30%;
+        background-color: #fafafa;
+    }
+
+    .info-table td:last-child {
+        color: #666;
+    }
+
+    /* Description Styles */
+    .description-text {
+        max-width: 900px;
+        line-height: 1.8;
+        color: #444;
+    }
+
+    /* Usage Styles */
+    .usage-list {
+        list-style: none;
+        padding: 0;
+        max-width: 800px;
+    }
+
+    .usage-list li {
+        padding: 10px 0;
+        color: #555;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .usage-list li i {
+        color: #28a745;
+        font-size: 1.2rem;
+    }
+</style>
+
 {{#> _wrappers/user-wrapper}}
 
 <main class="container section product-detail-page">
@@ -12,7 +139,6 @@
                 {{#each product.images}}
                 <img class="thumbnail" src="{{this}}" alt="thumb">
                 {{/each}}
-
             </div>
         </div>
         <div class="detail-info">
@@ -27,20 +153,85 @@
 
             <h2 class="product-price">{{formatCurrency product.price}}</h2>
 
-            <div class="quantity-selector">
-                <button id="decreaseQty">-</button>
-                <input type="number" id="productQty" value="1" min="1">
-                <button id="increaseQty">+</button>
+            <div class="quantity-container" style="display: flex; gap: 16px;align-items: center;">
+
+                <div class="quantity-selector">
+                    <button id="decreaseQty">
+                        <i class="bi bi-dash-lg"></i>
+                    </button>
+                    <input type="number" id="productQty" value="1" min="1">
+                    <button id="increaseQty">
+                        <i class="bi bi-plus-lg"></i>
+                    </button>
+                </div>
+
+                <div class="cta-row" style="width: 100%;margin: 0;">
+                    <a style="width: 100%;" id="addToCart" data-id="{{product._id}}" class="btn primary"><i
+                            class="bi bi-cart"></i>Thêm vào
+                        giỏ
+                        hàng</a>
+                </div>
             </div>
 
-            <div class="cta-row">
-                <a id="addToCart" data-id="{{product._id}}" class="btn primary"><i class="bi bi-cart"></i>Thêm vào giỏ
-                    hàng</a>
 
-            </div>
+            {{!-- <div class="trust-badge_div">
+                <div class="trust-badge_container">
+                    <div class="trust-badge_card">
+                        <img class="trust-badge_img" src="/images/trust-badge-1.webp" width="240" height="260">
+                        <span class="trust-badge_heading">
 
-            <div class="info-card">
-                <h4>- Thông tin sản phẩm</h4>
+                            Sản phẩm <span style="white-space: nowrap;">chính hãng 100%</span>
+
+                        </span>
+                    </div>
+                    <div class="trust-badge_card">
+                        <img class="trust-badge_img" src="/images/trust-badge-2.webp" width="240" height="260">
+                        <span class="trust-badge_heading">
+
+                            Chất liệu an toàn <span style="white-space: nowrap;">cho trẻ em</span>
+
+                        </span>
+                    </div>
+                </div>
+            </div> --}}
+        </div>
+</main>
+
+<div class="container section">
+    <div class="product-info-tabs">
+        <div class="tabs-nav">
+            <button class="tab-link active" onclick="openTab(event, 'tab-info')">Thông tin sản phẩm</button>
+            <button class="tab-link" onclick="openTab(event, 'tab-desc')">Mô tả sản phẩm</button>
+            <button class="tab-link" onclick="openTab(event, 'tab-usage')">Công dụng</button>
+        </div>
+
+        <div id="tab-info" class="tab-content active">
+            <table class="info-table">
+                <tr>
+                    <td>Thương hiệu</td>
+                    <td>{{product.brandId.name}}</td>
+                </tr>
+                <tr>
+                    <td>Danh mục</td>
+                    <td>{{product.categoryId.name}}</td>
+                </tr>
+                {{!-- <tr>
+                    <td>Chất liệu</td>
+                    <td>Nhựa ABS cao cấp, an toàn</td>
+                </tr>
+                <tr>
+                    <td>Độ tuổi phù hợp</td>
+                    <td>6+</td>
+                </tr>
+                <tr>
+                    <td>Kích thước hộp</td>
+                    <td>30 x 20 x 5 cm</td>
+                </tr> --}}
+            </table>
+        </div>
+
+        <div id="tab-desc" class="tab-content">
+            <div class="description-text">
                 <ul>
                     {{#if product.productInfo}}
                     {{#each (splitLines product.productInfo) }}
@@ -50,25 +241,24 @@
                     <li>• Hiện chưa có thông tin</li>
                     {{/if}}
                 </ul>
-
-                <h4 style="margin-top: 12px;">- Công dụng</h4>
-                <ul>
-                    {{#if product.usage}}
-                    {{#each (splitLines product.usage) }}
-                    <li>• {{this}}</li>
-                    {{/each}}
-                    {{else}}
-                    <li>• Hiện chưa có thông tin</li>
-                    {{/if}}
-                </ul>
             </div>
+        </div>
 
+        <div id="tab-usage" class="tab-content">
+            <ul class="usage-list">
+                {{#if product.usage}}
+                {{#each (splitLines product.usage)}}
+                <li><i class="bi bi-check2-circle"></i> {{this}}</li>
+                {{/each}}
+                {{else}}
+                <li>Chưa có thông tin về công dụng sản phẩm.</li>
+                {{/if}}
+            </ul>
         </div>
     </div>
+</div>
 
-</main>
-
-<main class="container section">
+<main class="container section" style="border-top: 1px solid #eee;">
     <section class="section review-section">
         <div class="section-header">
             <div>
@@ -76,7 +266,7 @@
                 <h2>Đánh giá sản phẩm</h2>
             </div>
             <div class="right">
-                {{#if totalReviews}}
+                {{!-- {{#if totalReviews}}
                 <div class="rating-average">
                     <div class="average-number">{{averageRating}}</div>
                     <div class="rating-group">
@@ -94,7 +284,28 @@
                 <div class="no-reviews">
                     Chưa có đánh giá nào
                 </div>
-                {{/if}}
+                {{/if}} --}}
+
+                {{!-- {{#if totalReviews}} --}}
+                <div class="rating-average">
+                    <div class="average-number">{{averageRating}}</div>
+                    <div class="rating-group">
+                        <div class="rating-stars">
+                            {{#each (range 1 5)}}
+                            <i class="bi {{#if (lte this ../averageRating)}}bi-star-fill{{else}}bi-star{{/if}}"></i>
+                            {{/each}}
+                        </div>
+                        <div class="total-reviews">
+                            {{totalReviews}} lượt đánh giá
+                        </div>
+                    </div>
+                </div>
+                {{!-- {{else}}
+                <div class="no-reviews">
+                    Chưa có đánh giá nào
+                </div>
+                {{/if}} --}}
+
             </div>
         </div>
         {{#if reviews.length}}
@@ -138,7 +349,9 @@
 
         </div>
         {{else}}
-        <p class="text-center text-muted">Chưa có đánh giá nào cho sản phẩm này.</p>
+        <p class="text-center text-muted" style="text-align: center;">
+            Chưa có đánh giá nào, hãy chia sẻ đánh giá của bạn cho sản phẩm này bạn nhé.
+        </p>
         {{/if}}
     </section>
 </main>
@@ -390,7 +603,22 @@
         });
     }
 
+    function openTab(evt, tabName) {
+        var i, tabContent, tabLinks;
+        tabContent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabContent.length; i++) {
+            tabContent[i].classList.remove("active");
+        }
+        tabLinks = document.getElementsByClassName("tab-link");
+        for (i = 0; i < tabLinks.length; i++) {
+            tabLinks[i].classList.remove("active");
+        }
+        document.getElementById(tabName).classList.add("active");
+        evt.currentTarget.classList.add("active");
+    }
+
     if (document.readyState === 'loading') {
+
         document.addEventListener('DOMContentLoaded', initializeVariants);
     } else {
         initializeVariants();

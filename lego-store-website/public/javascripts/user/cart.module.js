@@ -117,9 +117,15 @@ class Cart {
                     `
                 <td class="item-quantity center">
                     <div class="quantity-control">
-                        <button class="btn-decrease" data-id="${_id}" data-variant-combination-id="${item.variantCombinationId ? item.variantCombinationId : ``}">-</button>
+                        <button 
+                            class="btn-decrease" 
+                            data-id="${_id}" 
+                            data-variant-combination-id="${item.variantCombinationId ? item.variantCombinationId : ``}"><i class="bi bi-dash-lg"></i></button>
                         <input type="number" min="1" value="${quantity}" class="quantity-input" data-id="${itemId}">
-                        <button class="btn-increase" data-id="${_id}" data-variant-combination-id="${item.variantCombinationId ? item.variantCombinationId : ``}">+</button>
+                        <button 
+                            class="btn-increase" 
+                            data-id="${_id}" 
+                            data-variant-combination-id="${item.variantCombinationId ? item.variantCombinationId : ``}"><i class="bi bi-plus-lg"></i></button>
                     </div>
                 </td>
                 <td class="item-price center">${this.formatCurrency(item.price)}</td>
@@ -293,7 +299,7 @@ class Cart {
             btn.addEventListener('click', async () => {
                 const productId = btn.dataset.id;
                 const variantCombinationId = btn.dataset.variantCombinationId;
-              
+
                 await this.removeItem(productId, variantCombinationId);
             });
         });
@@ -323,7 +329,7 @@ class Cart {
                 showToast(result.message || "Cập nhật thất bại", "error");
                 return;
             }
-            this.loadCart(); 
+            this.loadCart();
         } catch (err) {
             console.error(err);
             showToast("Lỗi khi cập nhật số lượng", "error");
@@ -338,7 +344,7 @@ class Cart {
             const query = variantCombinationId ? `?variantCombinationId=${variantCombinationId}` : '';
             const res = await fetch(`/api/cart/remove/${productId}${query}`, { method: 'DELETE' });
             const result = await res.json();
-           
+
             if (result.success) {
                 showToast(result.message || "Xóa sản phẩm thành công khỏi giỏ hàng.", "success");
                 const event = new CustomEvent("cart:update", { detail: { quantity: result.data.cartQuantity || 0 } });

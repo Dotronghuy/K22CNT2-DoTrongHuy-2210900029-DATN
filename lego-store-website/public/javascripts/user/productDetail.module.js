@@ -81,6 +81,17 @@ class Product {
         }
         this.updateImage();
     }
+    // updateImage() {
+    //     this.thumbnails.forEach(t => t.classList.remove("active"));
+
+    //     const currentThumb = this.thumbnails[this.currentIndex];
+    //     currentThumb.classList.add("active");
+
+    //     this.mainImage.src = currentThumb.src;
+
+    //     this.mainImage.classList.add("fade");
+    //     setTimeout(() => this.mainImage.classList.remove("fade"), 200);
+    // }
     updateImage() {
         this.thumbnails.forEach(t => t.classList.remove("active"));
 

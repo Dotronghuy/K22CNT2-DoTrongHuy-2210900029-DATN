@@ -36,10 +36,10 @@ const OrderSchema = new mongoose.Schema({
     // Thanh toán
     paymentMethod: {
         type: String,
-        enum: ['cod', 'vnpay', 'momo', 'zalopay'],
+        enum: ['cod', 'vnpay'],
         default: 'cod'
     },
-    gateway: { type: String },      // vnpay | momo | zalopay
+    gateway: { type: String },      // vnpay
     transactionId: { type: String },// mã giao dịch từ cổng thanh toán
     // (Tuỳ) trạng thái thanh toán riêng để biết đã pay online hay chưa
     paymentStatus: {

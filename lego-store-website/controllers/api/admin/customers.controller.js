@@ -12,12 +12,16 @@ class CustomersController {
             if (!user) {
                 return error(res, 404, 'Người dùng không tồn tại');
             }
-         
+
             if (user.role === 0) {
                 return error(res, 403, 'Không thể khóa tài khoản quản trị viên');
             }
 
-            user.status = user.status === 1 ? 0 : 1;
+            if (user.status == 0) {
+                return error(res, 400, 'Tài khoản này chưa xác minh Gmail');
+            }
+
+            user.status = user.status === 1 ? 2 : 1;
             await user.save();
 
             const transporter = nodemailer.createTransport({
@@ -30,7 +34,7 @@ class CustomersController {
                 }
             });
 
-            const isLocked = user.status === 0;
+            const isLocked = user.status === 2;
 
             const supportEmail = process.env.SUPPORT_EMAIL || process.env.SMTP_USER;
             const appName = process.env.APP_NAME || 'Hệ thống';
