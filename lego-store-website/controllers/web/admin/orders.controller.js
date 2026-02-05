@@ -37,7 +37,7 @@ class OrderController {
             const totalPages = Math.ceil(totalItems / limit);
 
             const orders = await Order.find(filter)
-                .sort({ createdAt: -1 }) 
+                .sort({ createdAt: -1 })
                 .skip((page - 1) * limit)
                 .limit(limit)
                 .lean();

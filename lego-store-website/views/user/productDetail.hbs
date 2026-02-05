@@ -314,7 +314,13 @@
             <div class="review-card">
                 <div class="review-header">
                     <div class="review-user-info">
+                        {{!-- <img src="{{this.userId.avatarUrl}}" alt="{{this.userId.fullName}}" class="review-avatar">
+                        --}}
+                        {{#if this.userId.avatarUrl}}
                         <img src="{{this.userId.avatarUrl}}" alt="{{this.userId.fullName}}" class="review-avatar">
+                        {{else}}
+                        <img src="/images/default-avatar.png" alt="Default avatar" class="review-avatar">
+                        {{/if}}
                         <div class="user-details">
                             <strong>{{this.userId.fullName}}</strong>
                             <div class="rating-stars">

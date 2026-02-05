@@ -65,10 +65,12 @@
                             {{#if (eq ../status "delivered")}}
                             <td class="center fit">
                                 {{#if this.reviewed}}
-                                <button class="btn btn-secondary btn-review btn-review-disabled" disabled>Đã đánh giá</button>
+                                <button class="btn btn-secondary btn-review btn-review-disabled" disabled>Đã đánh
+                                    giá</button>
                                 {{else}}
                                 <button class="btn btn-primary btn-review" data-order-id="{{../_id}}"
-                                    data-item-id="{{this._id}}" data-product-id="{{this.productId}}" data-variant-combination-id="{{this.variantCombinationId}}">
+                                    data-item-id="{{this._id}}" data-product-id="{{this.productId}}"
+                                    data-variant-combination-id="{{this.variantCombinationId}}">
                                     Đánh giá
                                 </button>
                                 {{/if}}

@@ -10,4 +10,5 @@
 /users.seed.json
 /fix-old-orders.js
 /seed-orders.js
+/seed-review.js
 /seed-users-from-json.js
